@@ -24,7 +24,36 @@ let hrFiscal = FiscalDetails.make({
     spent: 8000
 })
 
-let neonLabsCompany = Company.make({
+function remainingBudget(company: Company, department: DepartmentName): number {
+    return company.departments[department].budget 
+}
+
+function spend(company: Company, department: DepartmentName, amount: number): Company {
+    const currentBudget = remainingBudget(company, department)
+    if (currentBudget < amount) {
+        console.log('Not enough money!')
+        return company
+    }
+    
+    const newBudget = currentBudget - amount
+    const newSpent = company.departments[department].spent + amount
+
+    const companyUpdated = Company.make({
+        ...company,
+        departments: DeptalFiscalData.make({
+            ...company.departments,
+            [department]: FiscalDetails.make({
+                budget: newBudget,
+                spent: newSpent,
+            })
+        })
+    })
+
+    return companyUpdated
+
+}
+
+const neonLabsCompany = Company.make({
     name: "Neon Labs",
     departments: DeptalFiscalData.make({
         engineering: enggFiscal,
@@ -33,38 +62,10 @@ let neonLabsCompany = Company.make({
     })
 })
 
-function remainingBudget(department: FiscalDetails): number {
-    return department.budget - department.spent
-}
-
-function spend(departmentName: DepartmentName, amount: number): void {
-
-    let department = neonLabsCompany.departments[departmentName]
-    if (amount > remainingBudget(department)) {
-        console.log("can't afford! ")
-        return
-    }
-
-    const newBudget = department.budget - amount
-    const newSpent = department.spent + amount
-
-    neonLabsCompany = Company.make({
-        ...neonLabsCompany,
-        departments: DeptalFiscalData.make({
-            ...neonLabsCompany.departments,
-            [departmentName] : FiscalDetails.make({ //assigns variab;e's VALUE as key
-                budget: newBudget,
-                spent: newSpent
-            })
-            
-        })
-    })
-}
-
 const a = JSON.stringify(neonLabsCompany, null, 4)
 console.log(a)
-spend('engineering', 5000)
-const b = JSON.stringify(neonLabsCompany, null, 4)
-console.log(b)
+const b = spend(neonLabsCompany, 'engineering', 5000)
+const b2 = JSON.stringify(b, null, 4)
+console.log(b2)
 
 

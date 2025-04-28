@@ -15,3 +15,6 @@ export const Company = S.TaggedStruct('Company', {
     name: S.String,
     departments: DeptalFiscalData
     })
+
+
+    

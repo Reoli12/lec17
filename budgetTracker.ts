@@ -53,6 +53,34 @@ function spend(company: Company, department: DepartmentName, amount: number): Co
 
 }
 
+function transferFunds(company: Company, fromDept: DepartmentName,
+                        toDept: DepartmentName, amount: number): Company {
+    if (remainingBudget(company, fromDept) < amount) {
+        console.log('Not enough funds! ')
+        return company
+    }
+
+    // removing funds from fromDept
+    const intermediateCompanyState = spend(company, fromDept, amount)
+
+    // giving toDept the previously mentioned funds
+    const toDeptCurrentBudget = remainingBudget(company, toDept)
+
+    const updatedCompanyState = Company.make({
+        ...intermediateCompanyState,
+        departments: DeptalFiscalData.make({
+            ...intermediateCompanyState.departments,
+            [toDept]: FiscalDetails.make({
+                ...intermediateCompanyState.departments[toDept],
+                budget: toDeptCurrentBudget + amount
+            })
+        })
+    })
+
+    return updatedCompanyState
+}
+
+
 const neonLabsCompany = Company.make({
     name: "Neon Labs",
     departments: DeptalFiscalData.make({
@@ -68,4 +96,7 @@ const b = spend(neonLabsCompany, 'engineering', 5000)
 const b2 = JSON.stringify(b, null, 4)
 console.log(b2)
 
+const c = transferFunds(b, 'hr', 'engineering', b.departments.hr.budget)
+const c2 = JSON.stringify(c, null, 4)
+console.log(c2)
 

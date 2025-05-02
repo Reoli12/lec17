@@ -14,7 +14,7 @@ function updateTaskStatus(taskBoard: TaskBoard, taskID: string, newStatus: TaskS
         }
 
     const newTask = Task.make({
-        ...HashMap.unsafeGet(taskBoard.board, taskID),
+        ...getSpecificTask(taskBoard, taskID),
         status: newStatus
     })
 
@@ -23,3 +23,25 @@ function updateTaskStatus(taskBoard: TaskBoard, taskID: string, newStatus: TaskS
         board: HashMap.set(taskBoard.board, taskID, newTask)
     })
 }
+
+function assignTask(taskBoard: TaskBoard, taskID: string, newAssignee: string) {
+    if (!HashMap.has(taskBoard.board, taskID)){
+        throw 'Task ID not found! '
+        }
+
+    const currentTaskState = getSpecificTask(taskBoard, taskID)
+    const newTaskState = Task.make({
+        ...currentTaskState,
+        assignee: newAssignee
+    })
+
+    return updateTaskBoard(taskBoard, newTaskState)
+}
+
+const updateTaskBoard = (taskBoard: TaskBoard, newTask: Task) => (
+    TaskBoard.make({
+        ...taskBoard,
+        board: HashMap.set(taskBoard.board, newTask.id, newTask)
+    })
+)
+const getSpecificTask = (taskBoard: TaskBoard, taskID: string) => HashMap.unsafeGet(taskBoard.board, taskID)

@@ -30,6 +30,11 @@ function assignTask(taskBoard: TaskBoard, taskID: string, newAssignee: string) {
         }
 
     const currentTaskState = getSpecificTask(taskBoard, taskID)
+
+    if (currentTaskState.assignee === newAssignee) {
+        return taskBoard
+    }
+    
     const newTaskState = Task.make({
         ...currentTaskState,
         assignee: newAssignee

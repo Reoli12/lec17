@@ -9,8 +9,17 @@ function addTask(taskBoard: TaskBoard, task: Task){
 }
 
 function updateTaskStatus(taskBoard: TaskBoard, taskID: string, newStatus: TaskStatus) {
-    if (!Array.contains(Array.map(taskBoard.board, (task) => task.id), 
-                        taskID)) {
-                            // raise error here
-                        }
+    if (!HashMap.has(taskBoard.board, taskID)){
+        throw 'Task ID not found! '
+        }
+
+    const newTask = Task.make({
+        ...HashMap.unsafeGet(taskBoard.board, taskID),
+        status: newStatus
+    })
+
+    return TaskBoard.make({
+        ...taskBoard,
+        board: HashMap.set(taskBoard.board, taskID, newTask)
+    })
 }

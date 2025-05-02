@@ -1,6 +1,5 @@
-import { Array, HashMap } from 'effect'
-import { Task, TaskBoard, TaskStatus, Priority } from './projectTypes'
-import { update } from 'effect/Differ'
+import { Array, HashMap, Match } from 'effect'
+import { Task, TaskBoard, TaskStatus, Priority, TaskCollectionStats } from './projectTypes'
 
 function addTask(taskBoard: TaskBoard, task: Task){ 
     return TaskBoard.make({
@@ -54,6 +53,31 @@ function filterTasks(taskBoard: TaskBoard, status?: TaskStatus, priority?: Prior
     }
 
     return ret
+}
+
+function getStats(taskBoard: TaskBoard): TaskCollectionStats {
+    let total = 0
+    let done = 0
+    let inProgress = 0
+    let todo = 0
+
+    for (const task of HashMap.values(taskBoard.board)) {
+        total += 1
+
+        Match.value(task.status).pipe(
+            Match.tag('todo', () => {todo += 1}),
+            Match.tag('ongoing', () => {inProgress += 1}),
+            Match.tag('done', () => {done += 1}),
+            Match.exhaustive,
+        )
+    }
+
+    return TaskCollectionStats.make({
+        total: total,
+        done: done,
+        inProgress: inProgress,
+        todo: todo,
+    })
 }
 
 

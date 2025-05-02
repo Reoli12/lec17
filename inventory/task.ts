@@ -1,5 +1,6 @@
 import { Array, HashMap } from 'effect'
 import { Task, TaskBoard, TaskStatus, Priority } from './projectTypes'
+import { update } from 'effect/Differ'
 
 function addTask(taskBoard: TaskBoard, task: Task){ 
     return TaskBoard.make({
@@ -18,10 +19,7 @@ function updateTaskStatus(taskBoard: TaskBoard, taskID: string, newStatus: TaskS
         status: newStatus
     })
 
-    return TaskBoard.make({
-        ...taskBoard,
-        board: HashMap.set(taskBoard.board, taskID, newTask)
-    })
+    return updateTaskBoard(taskBoard, newTask)
 }
 
 function assignTask(taskBoard: TaskBoard, taskID: string, newAssignee: string) {
@@ -34,7 +32,7 @@ function assignTask(taskBoard: TaskBoard, taskID: string, newAssignee: string) {
     if (currentTaskState.assignee === newAssignee) {
         return taskBoard
     }
-    
+
     const newTaskState = Task.make({
         ...currentTaskState,
         assignee: newAssignee
@@ -42,6 +40,22 @@ function assignTask(taskBoard: TaskBoard, taskID: string, newAssignee: string) {
 
     return updateTaskBoard(taskBoard, newTaskState)
 }
+
+function filterTasks(taskBoard: TaskBoard, status?: TaskStatus, priority?: Priority) {
+    const taskArray = HashMap.values(taskBoard.board)
+    let ret: Array<Task> =  Array.filter(taskArray, () => true) // array copy
+
+    if (typeof status !== 'undefined') {
+        ret = Array.filter(taskArray, (task): boolean => (task.status === status))
+    }
+
+    if (typeof priority !== 'undefined') {
+        ret = Array.filter(ret, (task): boolean => (task.priority === priority))
+    }
+
+    return ret
+}
+
 
 const updateTaskBoard = (taskBoard: TaskBoard, newTask: Task) => (
     TaskBoard.make({

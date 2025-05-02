@@ -1,10 +1,10 @@
-import { Array } from 'effect'
+import { Array, HashMap } from 'effect'
 import { Task, TaskBoard, TaskStatus, Priority } from './projectTypes'
 
 function addTask(taskBoard: TaskBoard, task: Task){ 
     return TaskBoard.make({
         ...taskBoard,
-        board: Array.append(taskBoard.board, task)
+        board: HashMap.set(taskBoard.board, task.id, task)
     })
 }
 

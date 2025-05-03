@@ -1,4 +1,4 @@
-import { HashMap, Array } from 'effect'
+import { HashMap, Array, Match } from 'effect'
 import { TaskBoard, Task, TaskStatus, Priority } from "./projectTypes"
 
 function setupPriorityDropdown() {
@@ -77,9 +77,20 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
             
             for (const taskDetail of Array.make(task.id, task.title, 
                                                 task.priority, task.status)) {
+                                                    // title and id are string, everything else a struct
+                type taskDetailType = typeof taskDetail // to allow typescript to type narrow
                 const taskDetailCellNode = document.createElement('td')
-                                         
+                    taskDetailCellNode.textContent = ((taskDetail: taskDetailType) => {
+                                                if (typeof taskDetail === 'string') {
+                                                    return taskDetail
+                                                }
+                                                else {
+                                                    return taskDetail._tag
+                                                }
+                                            })(taskDetail)
+                taskEntry.appendChild(taskDetailCellNode)                         
             }
+            statsTableBody.appendChild(taskEntry)
 
         }
 

@@ -25,11 +25,29 @@ function setupPriorityDropdown() {
 function main() {
     const root = document.querySelector('#root')!
     const taskNameInput = document.createElement('input')
+        taskNameInput.defaultValue = 'New task '
     const priorityDropdown = setupPriorityDropdown()
+
+    taskNameInput.addEventListener('click', () => clearTextboxIfDefaultVal(taskNameInput))
+    taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
 
     root.append(taskNameInput)
     root.append(priorityDropdown)
+
     
+    
+}
+
+const revertToDefaultValueIfEmpty = (textbox: HTMLInputElement) => {
+    if (textbox.value === '') {
+        textbox.value = textbox.defaultValue
+    }
+}
+
+const clearTextboxIfDefaultVal = (textbox: HTMLInputElement) => {
+    if (textbox.value === textbox.defaultValue) {
+        textbox.value = ''
+    }
 }
 
 main()

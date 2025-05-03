@@ -51,17 +51,37 @@ function main() {
 
 function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
     const statsTable = document.createElement('table')
+
+    const statsTableHeaderData = Array.make('ID', 'Name', 'Priority', 'Status')
     statsTable.border = '1'
     statsTable.style = 'border-collapse: collapse;'
         const statsTableHeader = document.createElement('thead')
+            const tableNameRow = document.createElement('th')
+                tableNameRow.textContent = taskBoard.name
+                tableNameRow.colSpan = 4
+                statsTableHeader.appendChild(tableNameRow)
             const headerRow = document.createElement('tr')
-            for (const columnHead of Array.make('ID', 'Name', 'Priority', 'Status')) {
+            for (const columnHead of statsTableHeaderData) {
                 const headerCell = document.createElement('th')
                 headerCell.textContent = columnHead
                 headerRow.appendChild(headerCell)
             }
         statsTableHeader.appendChild(headerRow)
     statsTable.appendChild(statsTableHeader)
+
+    const statsTableBody = document.createElement('tbody')
+        for (const task of HashMap.values(taskBoard.board)) {
+            // make row, append to list
+            const taskEntry = document.createElement('tr')
+            // taskEntry.appendChild((new HTMLTableCellElement())
+            
+            for (const taskDetail of Array.make(task.id, task.title, 
+                                                task.priority, task.status)) {
+                const taskDetailCellNode = document.createElement('td')
+                                         
+            }
+
+        }
 
     return statsTable
 }

@@ -1,6 +1,6 @@
-import { HashMap, Array, String } from 'effect'
+import { HashMap, Array, String, Match } from 'effect'
 import { pipe } from 'effect/Function'
-import { TaskBoard, Task, TaskStatus, Priority } from "./projectTypes"
+import { TaskBoard, Task, TaskStatus, Priority, PriorityDropdownOptions } from "./projectTypes"
 
 const [low, medium, high] = Priority.members
 const [todo, ongoing, done] = TaskStatus.members
@@ -8,7 +8,7 @@ const [todo, ongoing, done] = TaskStatus.members
 function setupPriorityDropdown() {
 
     const priorityDropdown = document.createElement('select')
-    
+
     const nonePriorityOption = document.createElement('option')
         nonePriorityOption.textContent = 'None'
     priorityDropdown.options.add(nonePriorityOption)
@@ -102,9 +102,9 @@ function main() {
     taskNameInput.addEventListener('click', () => clearTextboxIfDefaultVal(taskNameInput))
     taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
 
-//     addTaskButton.addEventListener('click', () => {
-//         taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value)
-// })
+    addTaskButton.addEventListener('click', () => {
+        taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value)
+})
     
     root.append(taskNameInput)
     root.append(priorityDropdown)
@@ -112,5 +112,39 @@ function main() {
     root.append(makeTasksTable(taskBoard))
 }
 
-// function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, taskPriority: )
+function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, taskPriorityStr: string): TaskBoard {
+
+    // const validateNotNull = (obj: Priority | null) {
+    //     Match.value(obj).pipe(
+    //         Match.tag('Some', () => obj),
+    //         Match.tag('None', => {throw new Error('Priority must not be None')})
+    //     )
+    // }
+
+    const lowerTaskPriorityStr = String.toLowerCase(taskPriorityStr)
+    
+    const strToPrioLevelHashMap: HashMap.HashMap<string, PriorityDropdownOptions> = pipe(
+        PriorityDropdownOptions.members,
+        Array.map((optionObject) => optionObject.make()),
+        Array.map((initObj): [string, PriorityDropdownOptions] => [initObj._tag, initObj]),
+        (entries) => HashMap.make(...entries) //spread k-v pairs to .make()
+    )
+
+    const taskPriority = HashMap.unsafeGet(strToPrioLevelHashMap, taskPriorityStr) 
+    
+    const taskPriorityActual: Priority | null = Match.value(taskPriority).pipe(
+        Match.tag('none', () => null),
+        Match.orElse(() => taskPriority as Priority),
+    )
+
+
+
+    // const newTask = Task.make(
+    //     title: taskName,
+    //     id: 'test',
+    //     status: ongoing.make(),
+    //     priority: taskPriorityActual,
+    //     assignee: null,
+    // )
+}
 main()

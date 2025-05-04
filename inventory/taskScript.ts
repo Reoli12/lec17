@@ -1,6 +1,9 @@
 import { HashMap, Array, Match } from 'effect'
 import { TaskBoard, Task, TaskStatus, Priority } from "./projectTypes"
 
+const [low, medium, high] = Priority.members
+const [todo, ongoing, done] = TaskStatus.members
+
 function setupPriorityDropdown() {
 
     const priorityDropdown = document.createElement('select')
@@ -22,32 +25,6 @@ function setupPriorityDropdown() {
     return priorityDropdown
 }
 
-function main() {
-    const root = document.querySelector('#root')!
-    const taskNameInput = document.createElement('input')
-        taskNameInput.defaultValue = 'New task '
-    const priorityDropdown = setupPriorityDropdown()
-    const addTaskButton = document.createElement('button')
-        addTaskButton.textContent = 'Add Task'
-
-    const taskBoard = TaskBoard.make({
-        name: 'Daily Tasks',
-        board: HashMap.empty()
-    })
-
-    taskNameInput.addEventListener('click', () => clearTextboxIfDefaultVal(taskNameInput))
-    taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
-    
-
-    root.append(taskNameInput)
-    root.append(priorityDropdown)
-    root.append(addTaskButton)
-
-    root.append(makeTasksTable(taskBoard))
-
-    
-    
-}
 
 function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
     const statsTable = document.createElement('table')
@@ -67,10 +44,10 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
                 headerRow.appendChild(headerCell)
             }
         statsTableHeader.appendChild(headerRow)
-    statsTable.appendChild(statsTableHeader)
 
     const statsTableBody = document.createElement('tbody')
         for (const task of HashMap.values(taskBoard.board)) {
+            console.log(task)
             // make row, append to list
             const taskEntry = document.createElement('tr')
             // taskEntry.appendChild((new HTMLTableCellElement())
@@ -93,6 +70,8 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
             statsTableBody.appendChild(taskEntry)
 
         }
+    statsTable.appendChild(statsTableHeader)
+    statsTable.appendChild(statsTableBody)
 
     return statsTable
 }
@@ -109,4 +88,29 @@ const clearTextboxIfDefaultVal = (textbox: HTMLInputElement) => {
     }
 }
 
+function main() {
+    const root = document.querySelector('#root')!
+    const taskNameInput = document.createElement('input')
+        taskNameInput.defaultValue = 'New Task '
+    const priorityDropdown = setupPriorityDropdown()
+    const addTaskButton = document.createElement('button')
+        addTaskButton.textContent = 'Add Task'
+
+    // small test
+    const taskBoard = TaskBoard.make({
+        name: 'Daily Tasks',
+        board: HashMap.empty()
+        
+    })
+
+    taskNameInput.addEventListener('click', () => clearTextboxIfDefaultVal(taskNameInput))
+    taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
+    
+
+    root.append(taskNameInput)
+    root.append(priorityDropdown)
+    root.append(addTaskButton)
+
+    root.append(makeTasksTable(taskBoard))
+}
 main()

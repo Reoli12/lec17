@@ -103,16 +103,19 @@ function main() {
     taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
 
     addTaskButton.addEventListener('click', () => {
-        taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value)
+        taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value, taskCounter)
+        taskCounter++
 })
     
+    let taskCounter = 0
     root.append(taskNameInput)
     root.append(priorityDropdown)
     root.append(addTaskButton)
     root.append(makeTasksTable(taskBoard))
 }
 
-function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, taskPriorityStr: string): TaskBoard {
+function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, 
+                            taskPriorityStr: string, taskCounter: number): TaskBoard {
 
     // const validateNotNull = (obj: Priority | null) {
     //     Match.value(obj).pipe(
@@ -130,21 +133,30 @@ function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, taskPriorityS
         (entries) => HashMap.make(...entries) //spread k-v pairs to .make()
     )
 
-    const taskPriority = HashMap.unsafeGet(strToPrioLevelHashMap, taskPriorityStr) 
+    const taskPriority = HashMap.unsafeGet(strToPrioLevelHashMap, lowerTaskPriorityStr) 
     
     const taskPriorityActual: Priority | null = Match.value(taskPriority).pipe(
         Match.tag('none', () => null),
         Match.orElse(() => taskPriority as Priority),
     )
 
+    if (taskPriorityActual === null) {
+        throw new Error('Priority must not be None ')
+    }
+
+    const newTask = Task.make({
+        title: taskName,
+        id: `${taskCounter}`,
+        status: ongoing.make(),
+        priority: taskPriorityActual,
+        assignee: null,
+    })
+
+    return TaskBoard.make({
+        ...taskBoard,
+        board: HashMap.set(taskBoard.board, newTask.id, newTask)
+    })
 
 
-    // const newTask = Task.make(
-    //     title: taskName,
-    //     id: 'test',
-    //     status: ongoing.make(),
-    //     priority: taskPriorityActual,
-    //     assignee: null,
-    // )
 }
 main()

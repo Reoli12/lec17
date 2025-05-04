@@ -111,6 +111,7 @@ function main() {
             root.appendChild(taskTable)
         taskCounter++
 })
+
     let taskTable = makeTasksTable(taskBoard)
 
     let taskCounter = 0
@@ -122,13 +123,6 @@ function main() {
 
 function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, 
                             taskPriorityStr: string, taskCounter: number): TaskBoard {
-
-    // const validateNotNull = (obj: Priority | null) {
-    //     Match.value(obj).pipe(
-    //         Match.tag('Some', () => obj),
-    //         Match.tag('None', => {throw new Error('Priority must not be None')})
-    //     )
-    // }
 
     const lowerTaskPriorityStr = String.toLowerCase(taskPriorityStr)
     
@@ -152,7 +146,10 @@ function appendToTaskBoard(taskBoard: TaskBoard, taskName: string,
 
     const newTask = Task.make({
         title: taskName,
-        id: `${taskCounter}`,
+        id: pipe (
+            `${taskCounter}`,
+            String.padStart(5, '0')
+        ),
         status: ongoing.make(),
         priority: taskPriorityActual,
         assignee: null,
@@ -162,7 +159,5 @@ function appendToTaskBoard(taskBoard: TaskBoard, taskName: string,
         ...taskBoard,
         board: HashMap.set(taskBoard.board, newTask.id, newTask)
     })
-
-
 }
 main()

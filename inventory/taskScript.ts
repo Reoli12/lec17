@@ -1,4 +1,5 @@
-import { HashMap, Array, Match } from 'effect'
+import { HashMap, Array, String } from 'effect'
+import { pipe } from 'effect/Function'
 import { TaskBoard, Task, TaskStatus, Priority } from "./projectTypes"
 
 const [low, medium, high] = Priority.members
@@ -7,21 +8,21 @@ const [todo, ongoing, done] = TaskStatus.members
 function setupPriorityDropdown() {
 
     const priorityDropdown = document.createElement('select')
-        const lowPriorityOption = document.createElement('option')
-        const mediumPriorityOption = document.createElement('option')
-        const highPriorityOption = document.createElement('option')
-        const nonePriorityOption = document.createElement('option')
-            lowPriorityOption.textContent = 'Low'
-            mediumPriorityOption.textContent = 'Medium'
-            highPriorityOption.textContent = 'High'
-            nonePriorityOption.textContent = 'None'
+    
+    const nonePriorityOption = document.createElement('option')
+        nonePriorityOption.textContent = 'None'
+    priorityDropdown.options.add(nonePriorityOption)
 
-        for (const option of Array.make(nonePriorityOption, lowPriorityOption,
-                                        mediumPriorityOption, highPriorityOption )) {
-            priorityDropdown.options.add(option)
-            }
-
-
+        for (const priorityLevel of Priority.members) {
+            const priorityLevelOption = document.createElement('option')
+            priorityLevelOption.textContent = pipe(
+                priorityLevel.make(),
+                (priorityObject) => priorityObject._tag,
+                String.capitalize
+            )
+            priorityDropdown.options.add(priorityLevelOption)
+        }
+        
     return priorityDropdown
 }
 
@@ -36,11 +37,11 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
             const tableNameRow = document.createElement('th')
                 tableNameRow.textContent = taskBoard.name
                 tableNameRow.colSpan = 4
-                statsTableHeader.appendChild(tableNameRow)
+        statsTableHeader.appendChild(tableNameRow)
             const headerRow = document.createElement('tr')
             for (const columnHead of statsTableHeaderData) {
                 const headerCell = document.createElement('th')
-                headerCell.textContent = columnHead
+                    headerCell.textContent = columnHead
                 headerRow.appendChild(headerCell)
             }
         statsTableHeader.appendChild(headerRow)
@@ -59,12 +60,8 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
                 const taskDetailCellNode = document.createElement('td')
                     taskDetailCellNode.textContent = ((taskDetail: taskDetailType) => {
                                                 if (typeof taskDetail === 'string') {
-                                                    return taskDetail
-                                                }
-                                                else {
-                                                    return taskDetail._tag
-                                                }
-                                            })(taskDetail)
+                                                    return taskDetail}
+                                                return taskDetail._tag})(taskDetail)
                 taskEntry.appendChild(taskDetailCellNode)                         
             }
             statsTableBody.appendChild(taskEntry)
@@ -96,21 +93,24 @@ function main() {
     const addTaskButton = document.createElement('button')
         addTaskButton.textContent = 'Add Task'
 
-    // small test
-    const taskBoard = TaskBoard.make({
+
+    let taskBoard = TaskBoard.make({
         name: 'Daily Tasks',
         board: HashMap.empty()
-        
     })
 
     taskNameInput.addEventListener('click', () => clearTextboxIfDefaultVal(taskNameInput))
     taskNameInput.addEventListener('focusout', () => revertToDefaultValueIfEmpty(taskNameInput))
-    
 
+//     addTaskButton.addEventListener('click', () => {
+//         taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value)
+// })
+    
     root.append(taskNameInput)
     root.append(priorityDropdown)
     root.append(addTaskButton)
-
     root.append(makeTasksTable(taskBoard))
 }
+
+// function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, taskPriority: )
 main()

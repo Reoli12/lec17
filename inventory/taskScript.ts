@@ -48,7 +48,7 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
 
     const statsTableBody = document.createElement('tbody')
         for (const task of HashMap.values(taskBoard.board)) {
-            console.log(task)
+            // console.log(task)
             // make row, append to list
             const taskEntry = document.createElement('tr')
             // taskEntry.appendChild((new HTMLTableCellElement())
@@ -64,12 +64,14 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
                                                 return taskDetail._tag})(taskDetail)
                 taskEntry.appendChild(taskDetailCellNode)                         
             }
-            statsTableBody.appendChild(taskEntry)
+        // console.log(taskEntry)
+        statsTableBody.appendChild(taskEntry)
 
         }
     statsTable.appendChild(statsTableHeader)
     statsTable.appendChild(statsTableBody)
 
+    console.log(statsTable)
     return statsTable
 }
 
@@ -104,14 +106,18 @@ function main() {
 
     addTaskButton.addEventListener('click', () => {
         taskBoard = appendToTaskBoard(taskBoard, taskNameInput.value, priorityDropdown.value, taskCounter)
+        taskTable.innerHTML = ''
+            taskTable = makeTasksTable(taskBoard)
+            root.appendChild(taskTable)
         taskCounter++
 })
-    
+    let taskTable = makeTasksTable(taskBoard)
+
     let taskCounter = 0
-    root.append(taskNameInput)
-    root.append(priorityDropdown)
-    root.append(addTaskButton)
-    root.append(makeTasksTable(taskBoard))
+    root.appendChild(taskNameInput)
+    root.appendChild(priorityDropdown)
+    root.appendChild(addTaskButton)
+    root.appendChild(taskTable)
 }
 
 function appendToTaskBoard(taskBoard: TaskBoard, taskName: string, 

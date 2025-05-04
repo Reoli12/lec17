@@ -35,8 +35,14 @@ export const TaskCollectionStats = S.TaggedStruct('TaskCollectionStats', {
     todo: S.Number 
 })
 
+export const PriorityDropdownOptions = S.Union(
+    ...Priority.members,
+    S.TaggedStruct('none', {})
+)
+
 export type Task = typeof Task.Type
 export type TaskBoard = typeof TaskBoard.Type
 export type TaskStatus = typeof TaskStatus.Type
 export type Priority = typeof Priority.Type
 export type TaskCollectionStats = typeof TaskCollectionStats.Type
+export type PriorityDropdownOptions = typeof PriorityDropdownOptions.Type

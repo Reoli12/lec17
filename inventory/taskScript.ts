@@ -47,7 +47,11 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
         statsTableHeader.appendChild(headerRow)
 
     const statsTableBody = document.createElement('tbody')
-        for (const task of HashMap.values(taskBoard.board)) {
+
+        const taskArray = HashMap.values(taskBoard.board)
+        const taskArraySortedByID = [...taskArray].sort(sortByID)
+
+        for (const task of taskArraySortedByID) {
             // console.log(task)
             // make row, append to list
             const taskEntry = document.createElement('tr')
@@ -74,6 +78,8 @@ function makeTasksTable(taskBoard: TaskBoard): HTMLTableElement {
     console.log(statsTable)
     return statsTable
 }
+
+const sortByID = (a: Task, b: Task) => a.id < b.id? -1 : a.id > b.id? 1 : 0
 
 const revertToDefaultValueIfEmpty = (textbox: HTMLInputElement) => {
     if (textbox.value === '') {
